@@ -17,10 +17,6 @@ app.use((req, res, next) => {
   next();
 })
 
-app.get("/", (req, res) => {
-  res.send("Hi!");
-});
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

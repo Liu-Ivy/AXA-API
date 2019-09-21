@@ -1,6 +1,6 @@
 import express from 'express';
 import usersRoutes from './users';
-import policiesRoutes from './po]icies';
+import policiesRoutes from './policies';
 
 const router = express.Router();//it's a method
 
