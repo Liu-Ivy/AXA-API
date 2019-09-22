@@ -18,16 +18,29 @@ const policyUrl = "http://www.mocky.io/v2/580891a4100000e8242b75c5";
 //       const clients: Client[] = data.clients;
 //       const response: Client = clients.find(client => client.id === id);
 //       res.json(response);
-//     });
+//     })
+//     .catch((err) => )
 // };
 export const getUser = async (req, res, next) => {
   const { id, name } = req.query;
-  const results: AxiosResponse = await axios.get(clientUrl);
 
-  const client: Client = id
-    ? results.data.clients.find(client => client.id === id)
-    : results.data.clients.find(client => client.name === name);
-  res.json(client);
+  if (!id && !name) {
+    let err: any = new Error("Bad Request: User must have a name or id"); // Sets error message, includes the requester's ip address!
+    err.statusCode = 400;
+    return next(err);
+  }
+
+  try {
+    const results: AxiosResponse = await axios.get(clientUrl);
+    const client: Client = id
+      ? results.data.clients.find(client => client.id === id)
+      : results.data.clients.find(client => client.name === name);
+    res.json(
+      client || { message: `No client exists with name ${name} or id ${id}` }
+    );
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const getUserByPolicyId = async (req, res, next) => {

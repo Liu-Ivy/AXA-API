@@ -40,8 +40,8 @@ export const getPoliciesByUserName = async (req, res, next) => {
   if (role !== "admin") {
     res.json({ message: "user is not allowed" });
   }
-  const clientResults = await axios.get(clientUrl);
-  const policyResults = await axios.get(policyUrl);
+  const clientResults: AxiosResponse = await axios.get(clientUrl);
+  const policyResults: AxiosResponse = await axios.get(policyUrl);
   const client: Client = clientResults.data.clients.find(
     client => client.name === name
   );
