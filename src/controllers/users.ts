@@ -10,17 +10,6 @@ export interface Client {
 const clientUrl = "http://www.mocky.io/v2/5808862710000087232b75ac";
 const policyUrl = "http://www.mocky.io/v2/580891a4100000e8242b75c5";
 
-// export const getUserById = (req, res, next) => {
-//   const id = req.params.id;
-//   axios
-//     .get("http://www.mocky.io/v2/5808862710000087232b75ac")
-//     .then(({ data }: AxiosResponse) => {
-//       const clients: Client[] = data.clients;
-//       const response: Client = clients.find(client => client.id === id);
-//       res.json(response);
-//     })
-//     .catch((err) => )
-// };
 export const getUser = async (req, res, next) => {
   const { id, name } = req.query;
 
@@ -49,13 +38,18 @@ export const getUserByPolicyId = async (req, res, next) => {
   if (role !== "admin") {
     res.json({ message: "user is not allowed" });
   }
-  const policies = await axios.get(policyUrl);
-  const clients = await axios.get(clientUrl);
-  const clientPolicy: Policy = policies.data.policies.find(
-    policy => policy.id === policyId
-  );
-  const client: Client = clients.data.clients.find(
-    client => client.id === clientPolicy.clientId
-  );
-  res.json(client);
+
+  try {
+    const policies = await axios.get(policyUrl);
+    const clients = await axios.get(clientUrl);
+    const clientPolicy: Policy = policies.data.policies.find(
+      policy => policy.id === policyId
+    );
+    const client: Client = clients.data.clients.find(
+      client => client.id === clientPolicy.clientId
+    );
+    res.json(client || { message: "Policy Id is incorrect" });
+  } catch (err) {
+    return next(err);
+  }
 };
