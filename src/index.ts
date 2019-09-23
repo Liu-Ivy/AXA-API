@@ -7,7 +7,7 @@ const port = 8080 || process.env.PORT;
 app.use(express.static("build"));
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); //allow all origin to use it
+  res.header("Access-Control-Allow-Origin", "*"); //avoid CORES
   res.header(
     "Acces-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
@@ -24,12 +24,14 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/api", indexRouter);
 
+//WildCard handler
 app.get("*", (req, res, next) => {
   let err: any = new Error("Page Not Found");
   err.statusCode = 404;
   next(err);
 });
 
+//Error handler
 app.use(function(err, req, res, next) {
   console.error(err.message);
   if (!err.statusCode) err.statusCode = 500;
@@ -37,6 +39,5 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(port, () => {
-  // tslint:disable-next-line:no-console
   console.log(`server started at http://localhost:${port}`);
 });

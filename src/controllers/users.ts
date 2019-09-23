@@ -14,7 +14,7 @@ export const getUser = async (req, res, next) => {
   const { id, name } = req.query;
 
   if (!id && !name) {
-    let err: any = new Error("Bad Request: User must have a name or id"); // Sets error message, includes the requester's ip address!
+    let err: any = new Error("Bad Request: User must have a name or id");
     err.statusCode = 400;
     return next(err);
   }
@@ -35,8 +35,17 @@ export const getUser = async (req, res, next) => {
 export const getUserByPolicyId = async (req, res, next) => {
   const policyId = req.params.id;
   const { role } = req.query;
-  if (role !== "admin") {
-    res.json({ message: "user is not allowed" });
+
+  if (!policyId) {
+    let err: any = new Error("Bad Request: User must have policyId");
+    err.statusCode = 400;
+    return next(err);
+  }
+
+  if (!role || role !== "admin") {
+    let err: any = new Error("User is unauthorized");
+    err.statusCode = 403;
+    return next(err);
   }
 
   try {
@@ -48,7 +57,9 @@ export const getUserByPolicyId = async (req, res, next) => {
     const client: Client = clients.data.clients.find(
       client => client.id === clientPolicy.clientId
     );
-    res.json(client || { message: "Policy Id is incorrect" });
+    res.json(
+      client || { message: `No client with a policy id of ${policyId} exists` }
+    );
   } catch (err) {
     return next(err);
   }

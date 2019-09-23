@@ -16,8 +16,16 @@ const policyUrl = "http://www.mocky.io/v2/580891a4100000e8242b75c5";
 export const getPoliciesByUserName = async (req, res, next) => {
   const { name, role } = req.query;
 
-  if (role !== "admin") {
-    res.json({ message: "user is not allowed" });
+  if (!name) {
+    let err: any = new Error("Bad Request: User must have a user name");
+    err.statusCode = 400;
+    return next(err);
+  }
+
+  if (!role || role !== "admin") {
+    let err: any = new Error("User is unauthorized");
+    err.statusCode = 403;
+    return next(err);
   }
 
   try {
@@ -29,7 +37,7 @@ export const getPoliciesByUserName = async (req, res, next) => {
     const policy: Policy[] = policyResults.data.policies.filter(
       policy => policy.clientId === client.id
     );
-    res.json(policy || { message: "User name is in correct" });
+    res.json(policy || { message: `No policy exist for ${name}` });
   } catch (err) {
     return next(err);
   }
